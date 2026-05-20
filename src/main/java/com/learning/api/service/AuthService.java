@@ -5,6 +5,7 @@ import com.learning.api.dto.LoginRequestDTO;
 import com.learning.api.dto.SignupRequestDTO;
 import com.learning.api.entity.User;
 import com.learning.api.repository.UserRepository;
+import com.learning.api.util.JwtUtil;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -13,9 +14,11 @@ import java.util.Optional;
 public class AuthService {
 
     private final UserRepository userRepository;
+    private final JwtUtil jwtUtil;
 
-    public AuthService(UserRepository userRepository) {
+    public AuthService(UserRepository userRepository, JwtUtil jwtUtil) {
         this.userRepository = userRepository;
+        this.jwtUtil = jwtUtil;
     }
 
     public AuthResponseDTO signup(SignupRequestDTO requestDTO) {
@@ -39,7 +42,8 @@ public class AuthService {
         );
 
         User savedUser = userRepository.save(user);
-        return new AuthResponseDTO("Signup successful", savedUser);
+        String token = jwtUtil.generateToken(savedUser.getEmail());
+        return new AuthResponseDTO("Signup successful", savedUser, token);
     }
 
     public AuthResponseDTO login(LoginRequestDTO requestDTO) {
@@ -54,7 +58,8 @@ public class AuthService {
             return new AuthResponseDTO("Invalid password", null);
         }
 
-        return new AuthResponseDTO("Login successful", user.get());
+        String token = jwtUtil.generateToken(user.get().getEmail());
+        return new AuthResponseDTO("Login successful", user.get(), token);
     }
 
     private String validatePassword(String password) {

@@ -6,6 +6,7 @@ public class AuthResponseDTO {
 
     private String message;
     private User data;
+    private String token;
 
     public AuthResponseDTO() {
     }
@@ -13,6 +14,12 @@ public class AuthResponseDTO {
     public AuthResponseDTO(String message, User data) {
         this.message = message;
         this.data = data;
+    }
+
+    public AuthResponseDTO(String message, User data, String token) {
+        this.message = message;
+        this.data = data;
+        this.token = token;
     }
 
     public String getMessage() {
@@ -29,5 +36,13 @@ public class AuthResponseDTO {
 
     public void setData(User data) {
         this.data = data;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 }
