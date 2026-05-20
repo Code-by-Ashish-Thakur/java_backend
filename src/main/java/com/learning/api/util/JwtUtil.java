@@ -2,7 +2,7 @@ package com.learning.api.util;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
 
@@ -12,8 +12,11 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    // Secret key used to sign the JWT token (must be kept private)
-    private final Key secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    // Fixed secret key — stays the same even after server restart
+    // (in production, store this in application.properties or environment variable)
+    private final Key secretKey = Keys.hmacShaKeyFor(
+            "my-super-secret-key-that-is-at-least-32-characters-long".getBytes()
+    );
 
     // Token valid for 24 hours (in milliseconds)
     private final long expirationTime = 24 * 60 * 60 * 1000;

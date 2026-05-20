@@ -24,11 +24,17 @@ public class SecurityConfig {
                 // Disable CSRF (not needed for REST APIs with JWT)
                 .csrf(csrf -> csrf.disable())
 
+                // Disable default login form (we use JWT, not form login)
+                .formLogin(form -> form.disable())
+
+                // Disable default basic auth popup (we use JWT, not basic auth)
+                .httpBasic(basic -> basic.disable())
+
                 // Define which endpoints are public and which need authentication
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()   // signup & login = public
-                        .requestMatchers("/", "/about").permitAll()    // home & about = public
-                        .anyRequest().authenticated()                  // everything else = needs token
+                        .requestMatchers("/api/auth/signup").permitAll()   // only signup = public
+                        .requestMatchers("/", "/about").permitAll()        // home & about = public
+                        .anyRequest().authenticated()                      // login + everything else = needs token
                 )
 
                 // Don't create sessions — JWT is stateless
