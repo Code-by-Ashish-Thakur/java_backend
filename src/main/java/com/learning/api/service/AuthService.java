@@ -1,14 +1,15 @@
 package com.learning.api.service;
 
+import java.util.Optional;
+
+import org.springframework.stereotype.Service;
+
 import com.learning.api.dto.AuthResponseDTO;
 import com.learning.api.dto.LoginRequestDTO;
 import com.learning.api.dto.SignupRequestDTO;
 import com.learning.api.entity.User;
 import com.learning.api.repository.UserRepository;
 import com.learning.api.util.JwtUtil;
-import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 public class AuthService {
@@ -58,8 +59,8 @@ public class AuthService {
             return new AuthResponseDTO("Invalid password", null);
         }
 
-        String token = jwtUtil.generateToken(user.get().getEmail());
-        return new AuthResponseDTO("Login successful", user.get(), token);
+       
+        return new AuthResponseDTO("Login successful", user.get());
     }
 
     private String validatePassword(String password) {
