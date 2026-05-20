@@ -19,6 +19,12 @@ public class AuthService {
     }
 
     public AuthResponseDTO signup(SignupRequestDTO requestDTO) {
+        // Validate password before anything else
+        String passwordError = validatePassword(requestDTO.getPassword());
+        if (passwordError != null) {
+            return new AuthResponseDTO(passwordError, null);
+        }
+
         // Check if email already exists
         Optional<User> existingUser = userRepository.findByEmail(requestDTO.getEmail());
         if (existingUser.isPresent()) {
@@ -49,5 +55,32 @@ public class AuthService {
         }
 
         return new AuthResponseDTO("Login successful", user.get());
+    }
+
+    private String validatePassword(String password) {
+        if (password == null || password.length() < 5) {
+            return "Password must be at least 5 characters long";
+        }
+
+        boolean hasUpperCase = false;
+        boolean hasSpecialChar = false;
+
+        for (char ch : password.toCharArray()) {
+            if (Character.isUpperCase(ch)) {
+                hasUpperCase = true;
+            }
+            if (!Character.isLetterOrDigit(ch)) {
+                hasSpecialChar = true;
+            }
+        }
+
+        if (!hasUpperCase) {
+            return "Password must contain at least one capital letter";
+        }
+        if (!hasSpecialChar) {
+            return "Password must contain at least one special character";
+        }
+
+        return null;
     }
 }
