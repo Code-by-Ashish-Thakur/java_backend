@@ -1,9 +1,15 @@
+D:\java development learning\BACKEND\src\main\java\com\learning\api\dto\EmployeeResponseDTO.java
 D:\java development learning\BACKEND\src\main\java\com\learning\api\entity\Employee.java
 D:\java development learning\BACKEND\src\main\java\com\learning\api\ApiApplication.java
+D:\java development learning\BACKEND\src\main\java\com\learning\api\repository\StudentRepository.java
+D:\java development learning\BACKEND\src\main\java\com\learning\api\service\EmployeeService.java
+D:\java development learning\BACKEND\src\main\java\com\learning\api\dto\StudentRequestDTO.java
+D:\java development learning\BACKEND\src\main\java\com\learning\api\dto\EmployeeRequestDTO.java
+D:\java development learning\BACKEND\src\main\java\com\learning\api\dto\StudentPageResponseDTO.java
 D:\java development learning\BACKEND\src\main\java\com\learning\api\repository\EmployeeRepository.java
 D:\java development learning\BACKEND\src\main\java\com\learning\api\service\StudentService.java
-D:\java development learning\BACKEND\src\main\java\com\learning\api\repository\StudentRepository.java
 D:\java development learning\BACKEND\src\main\java\com\learning\api\controller\EmployeeController.java
-D:\java development learning\BACKEND\src\main\java\com\learning\api\service\EmployeeService.java
+D:\java development learning\BACKEND\src\main\java\com\learning\api\dto\EmployeePageResponseDTO.java
+D:\java development learning\BACKEND\src\main\java\com\learning\api\dto\StudentResponseDTO.java
 D:\java development learning\BACKEND\src\main\java\com\learning\api\controller\StudentController.java
 D:\java development learning\BACKEND\src\main\java\com\learning\api\entity\Student.java

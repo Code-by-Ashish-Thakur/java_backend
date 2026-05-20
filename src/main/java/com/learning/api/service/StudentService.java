@@ -1,5 +1,6 @@
 package com.learning.api.service;
 
+import com.learning.api.dto.StudentRequestDTO;
 import com.learning.api.entity.Student;
 import com.learning.api.repository.StudentRepository;
 import org.springframework.data.domain.Page;
@@ -30,7 +31,13 @@ public class StudentService {
     }
 
     // Save a new student
-    public Student createStudent(Student student) {
+    public Student createStudent(StudentRequestDTO requestDTO) {
+        Student student = new Student(
+                requestDTO.getName(),
+                requestDTO.getRollNo(),
+                requestDTO.getStream(),
+                requestDTO.getStudentClass()
+        );
         return studentRepository.save(student);
     }
 
@@ -57,14 +64,14 @@ public class StudentService {
     }
 
     // Update student by ID
-    public Optional<Student> updateStudent(Long id, Student updatedStudent) {
+    public Optional<Student> updateStudent(Long id, StudentRequestDTO requestDTO) {
         Optional<Student> student = studentRepository.findById(id);
         if (student.isPresent()) {
             Student existing = student.get();
-            existing.setName(updatedStudent.getName());
-            existing.setRollNo(updatedStudent.getRollNo());
-            existing.setStream(updatedStudent.getStream());
-            existing.setStudentClass(updatedStudent.getStudentClass());
+            existing.setName(requestDTO.getName());
+            existing.setRollNo(requestDTO.getRollNo());
+            existing.setStream(requestDTO.getStream());
+            existing.setStudentClass(requestDTO.getStudentClass());
             return Optional.of(studentRepository.save(existing));
         }
         return Optional.empty();

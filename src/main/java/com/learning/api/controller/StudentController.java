@@ -1,7 +1,5 @@
 package com.learning.api.controller;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -15,6 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.learning.api.dto.StudentRequestDTO;
+import com.learning.api.dto.StudentResponseDTO;
+import com.learning.api.dto.StudentPageResponseDTO;
 import com.learning.api.entity.Student;
 import com.learning.api.service.StudentService;
 
@@ -50,75 +51,57 @@ public class StudentController {
 
     // POST /api/students
     @PostMapping("/api/students")
-    public Map<String, Object> createStudent(@RequestBody Student student) {
-        Map<String, Object> response = new LinkedHashMap<>();
-        response.put("message", "Student saved successfully");
-        response.put("data", studentService.createStudent(student));
-        return response;
+    public StudentResponseDTO createStudent(@RequestBody StudentRequestDTO requestDTO) {
+        return new StudentResponseDTO("Student saved successfully", studentService.createStudent(requestDTO));
     }
 
     // GET /api/students (with search, filter & pagination)
     @GetMapping("/api/students")
-    public Map<String, Object> getAllStudents(
+    public StudentPageResponseDTO getAllStudents(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String stream,
             @RequestParam(required = false) String studentClass,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
-        Map<String, Object> response = new LinkedHashMap<>();
         Page<Student> studentPage = studentService.getAllStudents(name, stream, studentClass, page, size);
 
-        response.put("message", "Found " + studentPage.getTotalElements() + " student(s)");
-        response.put("data", studentPage.getContent());
-        response.put("currentPage", studentPage.getNumber());
-        response.put("totalPages", studentPage.getTotalPages());
-        response.put("totalItems", studentPage.getTotalElements());
-        return response;
+        return new StudentPageResponseDTO(
+                "Found " + studentPage.getTotalElements() + " student(s)",
+                studentPage.getContent(),
+                studentPage.getNumber(),
+                studentPage.getTotalPages(),
+                studentPage.getTotalElements()
+        );
     }
 
     // GET /api/students/{id}
     @GetMapping("/api/students/{id}")
-    public Map<String, Object> getStudentById(@PathVariable Long id) {
-        Map<String, Object> response = new LinkedHashMap<>();
+    public StudentResponseDTO getStudentById(@PathVariable Long id) {
         Optional<Student> student = studentService.getStudentById(id);
         if (student.isPresent()) {
-            response.put("message", "Student found successfully");
-            response.put("data", student.get());
-        } else {
-            response.put("message", "Student not found with id: " + id);
-            response.put("data", null);
+            return new StudentResponseDTO("Student found successfully", student.get());
         }
-        return response;
+        return new StudentResponseDTO("Student not found with id: " + id, null);
     }
 
     // PUT /api/students/{id}
     @PutMapping("/api/students/{id}")
-    public Map<String, Object> updateStudent(@PathVariable Long id, @RequestBody Student updatedStudent) {
-        Map<String, Object> response = new LinkedHashMap<>();
-        Optional<Student> student = studentService.updateStudent(id, updatedStudent);
+    public StudentResponseDTO updateStudent(@PathVariable Long id, @RequestBody StudentRequestDTO requestDTO) {
+        Optional<Student> student = studentService.updateStudent(id, requestDTO);
         if (student.isPresent()) {
-            response.put("message", "Student updated successfully");
-            response.put("data", student.get());
-        } else {
-            response.put("message", "Student not found with id: " + id);
-            response.put("data", null);
+            return new StudentResponseDTO("Student updated successfully", student.get());
         }
-        return response;
+        return new StudentResponseDTO("Student not found with id: " + id, null);
     }
 
     // DELETE /api/students/{id}
     @DeleteMapping("/api/students/{id}")
-    public Map<String, Object> deleteStudent(@PathVariable Long id) {
-        Map<String, Object> response = new LinkedHashMap<>();
+    public StudentResponseDTO deleteStudent(@PathVariable Long id) {
         Optional<Student> student = studentService.deleteStudent(id);
         if (student.isPresent()) {
-            response.put("message", "Student deleted successfully");
-            response.put("data", student.get());
-        } else {
-            response.put("message", "Student not found with id: " + id);
-            response.put("data", null);
+            return new StudentResponseDTO("Student deleted successfully", student.get());
         }
-        return response;
+        return new StudentResponseDTO("Student not found with id: " + id, null);
     }
 }

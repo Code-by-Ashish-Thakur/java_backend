@@ -1,7 +1,7 @@
-com\learning\api\repository\StudentRepository.class
-com\learning\api\ApiApplication.class
 com\learning\api\repository\EmployeeRepository.class
 com\learning\api\controller\EmployeeController.class
 com\learning\api\service\StudentService.class
+com\learning\api\repository\StudentRepository.class
+com\learning\api\ApiApplication.class
 com\learning\api\controller\StudentController.class
 com\learning\api\service\EmployeeService.class

@@ -1,5 +1,6 @@
 package com.learning.api.service;
 
+import com.learning.api.dto.EmployeeRequestDTO;
 import com.learning.api.entity.Employee;
 import com.learning.api.repository.EmployeeRepository;
 import org.springframework.data.domain.Page;
@@ -17,7 +18,13 @@ public class EmployeeService {
         this.employeeRepository = employeeRepository;
     }
 
-    public Employee createEmployee(Employee employee) {
+    public Employee createEmployee(EmployeeRequestDTO requestDTO) {
+        Employee employee = new Employee(
+                requestDTO.getName(),
+                requestDTO.getDepartment(),
+                requestDTO.getDesignation(),
+                requestDTO.getSalary()
+        );
         return employeeRepository.save(employee);
     }
 
@@ -41,14 +48,14 @@ public class EmployeeService {
         return employeeRepository.findById(id);
     }
 
-    public Optional<Employee> updateEmployee(Long id, Employee updatedEmployee) {
+    public Optional<Employee> updateEmployee(Long id, EmployeeRequestDTO requestDTO) {
         Optional<Employee> employee = employeeRepository.findById(id);
         if (employee.isPresent()) {
             Employee existing = employee.get();
-            existing.setName(updatedEmployee.getName());
-            existing.setDepartment(updatedEmployee.getDepartment());
-            existing.setDesignation(updatedEmployee.getDesignation());
-            existing.setSalary(updatedEmployee.getSalary());
+            existing.setName(requestDTO.getName());
+            existing.setDepartment(requestDTO.getDepartment());
+            existing.setDesignation(requestDTO.getDesignation());
+            existing.setSalary(requestDTO.getSalary());
             return Optional.of(employeeRepository.save(existing));
         }
         return Optional.empty();
