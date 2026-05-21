@@ -1,10 +1,20 @@
 package com.learning.api.dto;
 
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+
 public class EmployeeRequestDTO {
 
+    @NotBlank(message = "Name is required")
     private String name;
+
+    @NotBlank(message = "Department is required")
     private String department;
+
+    @NotBlank(message = "Designation is required")
     private String designation;
+
+    @Min(value = 0, message = "Salary must be a positive number")
     private double salary;
 
     public EmployeeRequestDTO() {

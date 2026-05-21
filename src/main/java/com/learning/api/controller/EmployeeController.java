@@ -5,6 +5,8 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.validation.Valid;
+
 import com.learning.api.dto.EmployeeRequestDTO;
 import com.learning.api.dto.EmployeeResponseDTO;
 import com.learning.api.dto.EmployeePageResponseDTO;
@@ -21,7 +23,7 @@ public class EmployeeController {
     }
 
     @PostMapping("/api/employees")
-    public EmployeeResponseDTO createEmployee(@RequestBody EmployeeRequestDTO requestDTO) {
+    public EmployeeResponseDTO createEmployee(@Valid @RequestBody EmployeeRequestDTO requestDTO) {
         return new EmployeeResponseDTO("Employee saved successfully", employeeService.createEmployee(requestDTO));
     }
 
@@ -54,7 +56,7 @@ public class EmployeeController {
     }
 
     @PutMapping("/api/employees/{id}")
-    public EmployeeResponseDTO updateEmployee(@PathVariable Long id, @RequestBody EmployeeRequestDTO requestDTO) {
+    public EmployeeResponseDTO updateEmployee(@PathVariable Long id, @Valid @RequestBody EmployeeRequestDTO requestDTO) {
         Optional<Employee> employee = employeeService.updateEmployee(id, requestDTO);
         if (employee.isPresent()) {
             return new EmployeeResponseDTO("Employee updated successfully", employee.get());

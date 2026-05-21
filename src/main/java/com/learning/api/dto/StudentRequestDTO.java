@@ -1,10 +1,20 @@
 package com.learning.api.dto;
 
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+
 public class StudentRequestDTO {
 
+    @NotBlank(message = "Name is required")
     private String name;
+
+    @Min(value = 1, message = "Roll number is required and must be greater than 0")
     private int rollNo;
+
+    @NotBlank(message = "Stream is required")
     private String stream;
+
+    @NotBlank(message = "Student class is required")
     private String studentClass;
 
     public StudentRequestDTO() {

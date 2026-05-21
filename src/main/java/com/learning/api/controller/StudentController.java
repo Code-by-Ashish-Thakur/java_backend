@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
+
 import com.learning.api.dto.StudentRequestDTO;
 import com.learning.api.dto.StudentResponseDTO;
 import com.learning.api.dto.StudentPageResponseDTO;
@@ -51,7 +53,7 @@ public class StudentController {
 
     // POST /api/students
     @PostMapping("/api/students")
-    public StudentResponseDTO createStudent(@RequestBody StudentRequestDTO requestDTO) {
+    public StudentResponseDTO createStudent(@Valid @RequestBody StudentRequestDTO requestDTO) {
         return new StudentResponseDTO("Student saved successfully", studentService.createStudent(requestDTO));
     }
 
@@ -87,7 +89,7 @@ public class StudentController {
 
     // PUT /api/students/{id}
     @PutMapping("/api/students/{id}")
-    public StudentResponseDTO updateStudent(@PathVariable Long id, @RequestBody StudentRequestDTO requestDTO) {
+    public StudentResponseDTO updateStudent(@PathVariable Long id, @Valid @RequestBody StudentRequestDTO requestDTO) {
         Optional<Student> student = studentService.updateStudent(id, requestDTO);
         if (student.isPresent()) {
             return new StudentResponseDTO("Student updated successfully", student.get());
