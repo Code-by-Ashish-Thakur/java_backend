@@ -1,10 +1,13 @@
 package com.learning.api.dto;
 
+import java.io.Serializable;
 import java.util.List;
 
 import com.learning.api.entity.Student;
 
-public class StudentPageResponseDTO {
+public class StudentPageResponseDTO implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private String message;
     private List<Student> data;

@@ -65,6 +65,12 @@
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
 
+        <!-- Redis: For caching Student/Employee data and JWT blacklisting -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+
         <!-- JJWT: Library to create and verify JWT tokens -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>

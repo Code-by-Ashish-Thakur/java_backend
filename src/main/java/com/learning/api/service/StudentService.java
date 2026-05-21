@@ -2,6 +2,9 @@ package com.learning.api.service;
 
 import java.util.Optional;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -19,7 +22,13 @@ import com.learning.api.repository.StudentRepository;
 // Service:    applies business logic, calls repository
 // Repository: talks to database
 //
-// @Service tells Spring: "Manage this class as a bean"
+// CACHING STRATEGY:
+//   @Cacheable  → Check Redis first, if found return cached, else query DB and cache it
+//   @CacheEvict → Remove stale data from Redis when we create/update/delete
+//
+// Cache names:
+//   "students"    → single student by ID (e.g., students::5)
+//   "allStudents" → list results with filters (e.g., allStudents::name_null_stream_Science_...)
 // ============================================================
 
 @Service
@@ -31,7 +40,8 @@ public class StudentService {
         this.studentRepository = studentRepository;
     }
 
-    // Save a new student 
+    // CREATE — evict all list caches (new student changes list results)
+    @CacheEvict(value = "allStudents", allEntries = true)
     public Student createStudent(StudentRequestDTO requestDTO) {
         Student student = new Student(
                 requestDTO.getName(),
@@ -42,7 +52,8 @@ public class StudentService {
         return studentRepository.save(student);
     }
 
-    // Get all students with search, filter & pagination
+    // GET ALL — no cache here, caching is done at the controller level
+    // (because Page<Student> can't be deserialized from Redis JSON)
     public Page<Student> getAllStudents(String name, String stream, String studentClass, int page, int size) {
         PageRequest pageable = PageRequest.of(page, size);
 
@@ -59,12 +70,17 @@ public class StudentService {
         }
     }
 
-    // Get student by ID
+    // GET BY ID — cache individual student, don't cache when not found
+    @Cacheable(value = "students", key = "#id", unless = "#result == null || !#result.isPresent()")
     public Optional<Student> getStudentById(Long id) {
         return studentRepository.findById(id);
     }
 
-    // Update student by ID
+    // UPDATE — evict this student's cache AND all list caches
+    @Caching(evict = {
+        @CacheEvict(value = "students", key = "#id"),
+        @CacheEvict(value = "allStudents", allEntries = true)
+    })
     public Optional<Student> updateStudent(Long id, StudentRequestDTO requestDTO) {
         Optional<Student> student = studentRepository.findById(id);
         if (student.isPresent()) {
@@ -78,7 +94,11 @@ public class StudentService {
         return Optional.empty();
     }
 
-    // Delete student by ID
+    // DELETE — evict this student's cache AND all list caches
+    @Caching(evict = {
+        @CacheEvict(value = "students", key = "#id"),
+        @CacheEvict(value = "allStudents", allEntries = true)
+    })
     public Optional<Student> deleteStudent(Long id) {
         Optional<Student> student = studentRepository.findById(id);
         if (student.isPresent()) {

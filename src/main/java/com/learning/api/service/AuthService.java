@@ -16,10 +16,13 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
+    private final TokenBlacklistService tokenBlacklistService;
 
-    public AuthService(UserRepository userRepository, JwtUtil jwtUtil) {
+    public AuthService(UserRepository userRepository, JwtUtil jwtUtil,
+                       TokenBlacklistService tokenBlacklistService) {
         this.userRepository = userRepository;
         this.jwtUtil = jwtUtil;
+        this.tokenBlacklistService = tokenBlacklistService;
     }
 
     public AuthResponseDTO signup(SignupRequestDTO requestDTO) {
@@ -61,6 +64,12 @@ public class AuthService {
 
        
         return new AuthResponseDTO("Login successful", user.get());
+    }
+
+    // Logout — blacklist the current token in Redis
+    public AuthResponseDTO logout(String token) {
+        tokenBlacklistService.blacklistToken(token);
+        return new AuthResponseDTO("Logout successful", null);
     }
 
     private String validatePassword(String password) {

@@ -1,13 +1,25 @@
 package com.learning.api.service;
 
-import com.learning.api.dto.EmployeeRequestDTO;
-import com.learning.api.entity.Employee;
-import com.learning.api.repository.EmployeeRepository;
+import java.util.Optional;
+
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import com.learning.api.dto.EmployeeRequestDTO;
+import com.learning.api.entity.Employee;
+import com.learning.api.repository.EmployeeRepository;
+
+// ============================================================
+// EMPLOYEE SERVICE — Same caching pattern as StudentService
+// ============================================================
+// Cache names:
+//   "employees"    → single employee by ID (e.g., employees::12)
+//   "allEmployees" → list results with filters
+// ============================================================
 
 @Service
 public class EmployeeService {
@@ -18,6 +30,8 @@ public class EmployeeService {
         this.employeeRepository = employeeRepository;
     }
 
+    // CREATE — evict all list caches
+    @CacheEvict(value = "allEmployees", allEntries = true)
     public Employee createEmployee(EmployeeRequestDTO requestDTO) {
         Employee employee = new Employee(
                 requestDTO.getName(),
@@ -28,6 +42,8 @@ public class EmployeeService {
         return employeeRepository.save(employee);
     }
 
+    // GET ALL — no cache here, caching is done at the controller level
+    // (because Page<Employee> can't be deserialized from Redis JSON)
     public Page<Employee> getAllEmployees(String name, String department, String designation, int page, int size) {
         PageRequest pageable = PageRequest.of(page, size);
 
@@ -44,10 +60,17 @@ public class EmployeeService {
         }
     }
 
+    // GET BY ID — cache individual employee, don't cache when not found
+    @Cacheable(value = "employees", key = "#id", unless = "#result == null || !#result.isPresent()")
     public Optional<Employee> getEmployeeById(Long id) {
         return employeeRepository.findById(id);
     }
 
+    // UPDATE — evict specific + all lists
+    @Caching(evict = {
+        @CacheEvict(value = "employees", key = "#id"),
+        @CacheEvict(value = "allEmployees", allEntries = true)
+    })
     public Optional<Employee> updateEmployee(Long id, EmployeeRequestDTO requestDTO) {
         Optional<Employee> employee = employeeRepository.findById(id);
         if (employee.isPresent()) {
@@ -61,6 +84,11 @@ public class EmployeeService {
         return Optional.empty();
     }
 
+    // DELETE — evict specific + all lists
+    @Caching(evict = {
+        @CacheEvict(value = "employees", key = "#id"),
+        @CacheEvict(value = "allEmployees", allEntries = true)
+    })
     public Optional<Employee> deleteEmployee(Long id) {
         Optional<Employee> employee = employeeRepository.findById(id);
         if (employee.isPresent()) {

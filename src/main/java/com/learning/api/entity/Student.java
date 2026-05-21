@@ -1,5 +1,7 @@
 package com.learning.api.entity;
 
+import java.io.Serializable;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -10,7 +12,9 @@ import jakarta.persistence.Table;
 // @Table   → Specifies the table name in PostgreSQL
 @Entity
 @Table(name = "students")
-public class Student {
+public class Student implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

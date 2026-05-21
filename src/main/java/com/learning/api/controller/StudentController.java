@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 
+import org.springframework.cache.annotation.Cacheable;
+
 import com.learning.api.dto.StudentRequestDTO;
 import com.learning.api.dto.StudentResponseDTO;
 import com.learning.api.dto.StudentPageResponseDTO;
@@ -58,6 +60,9 @@ public class StudentController {
     }
 
     // GET /api/students (with search, filter & pagination)
+    // Cached in Redis — the response DTO is simple and serializes fine (unlike Page<Student>)
+    @Cacheable(value = "allStudents",
+               key = "'name_' + #name + '_stream_' + #stream + '_class_' + #studentClass + '_page_' + #page + '_size_' + #size")
     @GetMapping("/api/students")
     public StudentPageResponseDTO getAllStudents(
             @RequestParam(required = false) String name,

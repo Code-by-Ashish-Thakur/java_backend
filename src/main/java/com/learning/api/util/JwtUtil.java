@@ -42,6 +42,11 @@ public class JwtUtil {
         return tokenEmail.equals(email) && !isTokenExpired(token);
     }
 
+    // Get the expiration date of a token (used by TokenBlacklistService for Redis TTL)
+    public Date getExpiration(String token) {
+        return extractClaims(token).getExpiration();
+    }
+
     // Check if token has expired
     private boolean isTokenExpired(String token) {
         return extractClaims(token).getExpiration().before(new Date());

@@ -1,5 +1,6 @@
 package com.learning.api.config;
 
+import com.learning.api.service.TokenBlacklistService;
 import com.learning.api.util.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -17,9 +18,11 @@ import java.util.ArrayList;
 public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
+    private final TokenBlacklistService tokenBlacklistService;
 
-    public JwtFilter(JwtUtil jwtUtil) {
+    public JwtFilter(JwtUtil jwtUtil, TokenBlacklistService tokenBlacklistService) {
         this.jwtUtil = jwtUtil;
+        this.tokenBlacklistService = tokenBlacklistService;
     }
 
     @Override
@@ -37,16 +40,23 @@ public class JwtFilter extends OncePerRequestFilter {
             String token = authHeader.substring(7);
 
             try {
-                // Step 4: Extract email from token
+                // Step 4: Check if this token has been blacklisted (user logged out)
+                if (tokenBlacklistService.isTokenBlacklisted(token)) {
+                    // Token is blacklisted — skip authentication, Spring Security will reject
+                    filterChain.doFilter(request, response);
+                    return;
+                }
+
+                // Step 5: Extract email from token
                 String email = jwtUtil.extractEmail(token);
 
-                // Step 5: If email is valid and no authentication exists yet
+                // Step 6: If email is valid and no authentication exists yet
                 if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-                    // Step 6: Validate the token
+                    // Step 7: Validate the token
                     if (jwtUtil.isTokenValid(token, email)) {
 
-                        // Step 7: Tell Spring Security "this user is authenticated"
+                        // Step 8: Tell Spring Security "this user is authenticated"
                         UsernamePasswordAuthenticationToken authToken =
                                 new UsernamePasswordAuthenticationToken(email, null, new ArrayList<>());
                         SecurityContextHolder.getContext().setAuthentication(authToken);
@@ -57,7 +67,7 @@ public class JwtFilter extends OncePerRequestFilter {
             }
         }
 
-        // Step 8: Continue to the next filter / controller
+        // Step 9: Continue to the next filter / controller
         filterChain.doFilter(request, response);
     }
 }

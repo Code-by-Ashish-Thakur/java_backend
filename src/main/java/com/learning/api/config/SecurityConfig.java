@@ -32,9 +32,9 @@ public class SecurityConfig {
 
                 // Define which endpoints are public and which need authentication
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/signup").permitAll()   // only signup = public
+                        .requestMatchers("/api/auth/signup", "/api/auth/login").permitAll()  // signup & login = public
                         .requestMatchers("/", "/about").permitAll()        // home & about = public
-                        .anyRequest().authenticated()                      // login + everything else = needs token
+                        .anyRequest().authenticated()                      // everything else = needs token
                 )
 
                 // Don't create sessions — JWT is stateless

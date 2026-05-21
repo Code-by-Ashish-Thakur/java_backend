@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 
+import org.springframework.cache.annotation.Cacheable;
+
 import com.learning.api.dto.EmployeeRequestDTO;
 import com.learning.api.dto.EmployeeResponseDTO;
 import com.learning.api.dto.EmployeePageResponseDTO;
@@ -27,6 +29,9 @@ public class EmployeeController {
         return new EmployeeResponseDTO("Employee saved successfully", employeeService.createEmployee(requestDTO));
     }
 
+    // Cached in Redis — the response DTO is simple and serializes fine (unlike Page<Employee>)
+    @Cacheable(value = "allEmployees",
+               key = "'name_' + #name + '_dept_' + #department + '_desig_' + #designation + '_page_' + #page + '_size_' + #size")
     @GetMapping("/api/employees")
     public EmployeePageResponseDTO getAllEmployees(
             @RequestParam(required = false) String name,
